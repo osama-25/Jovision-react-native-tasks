@@ -3,9 +3,9 @@ import { Image, View, Button, StyleSheet, Alert } from "react-native";
 
 const Task27 = () => {
     const images={
-      0: require('./Resources/0.jpeg'),
-      1: require('./Resources/1.jpeg'),
-      2: require('./Resources/2.jpeg')
+      0: require('../Resources/0.jpeg'),
+      1: require('../Resources/1.jpeg'),
+      2: require('../Resources/2.jpeg')
     };
     const [imageIndex, setIndex] = useState(0);
     const HandleAlert = () => {
