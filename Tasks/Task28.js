@@ -1,5 +1,6 @@
-import React, { useState } from "react"
-import { FlatList, Image, Pressable, Alert, View, StyleSheet } from "react-native"
+import React, { useRef, useState } from "react"
+import { FlatList, Image, Pressable, Alert, View, StyleSheet, Button, TextInput } from "react-native"
+import CustomAlert from "../Components/Alert-Input";
 
 const jsonData = {
     1: require('../Resources/0.jpeg'),
@@ -14,8 +15,8 @@ const jsonData = {
     10: require('../Resources/9.jpeg')
 };
 const imageData = Object.keys(jsonData).map(key => ({
-  id: key,
-  source: jsonData[key]
+    id: key,
+    source: jsonData[key]
 }));
 const Item = ({ item, onPress }) => (
     <Pressable onPress={onPress}>
@@ -26,31 +27,45 @@ const Item = ({ item, onPress }) => (
     </Pressable>
 );
 const Task28 = () => {
-    const [imageIndex, setIndex] = useState(0);
-    const HandleAlert = (index) => {
+    const flatListRef = useRef(null);
+    const [isModalVisible, setModalVisible] = useState(false);
+
+    const ShowIndex = (index) => {
         Alert.alert(
             'Image Selected',
             `You have selected image ${index + 1}`,
-            [{ text: 'OK', onPress: () => console.log('OK Pressed') }]
+            [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
+            {cancelable: true}
         )
     }
-
     const renderItem = ({ item, index }) => {
-
         return (
             <Item
                 item={item}
-                onPress={() => { HandleAlert(index) }}
+                onPress={() => { ShowIndex(index) }}
             />
         );
     };
+
+    const GoToMethod = (index) => {
+        if(flatListRef.current){
+            index--;
+            flatListRef.current.scrollToIndex({index, viewPosition: 1,});
+        }
+    }
     return (
         <View>
+            <Button title={'Go To'} onPress={() => setModalVisible(true)} />
+            <CustomAlert
+                visible={isModalVisible}
+                onClose={() => setModalVisible(false)}
+                onSubmit={GoToMethod}
+            />
             <FlatList
+                ref={flatListRef}
                 data={imageData}
                 renderItem={renderItem}
                 keyExtractor={item => item.id}
-                extraData={imageIndex}
             />
         </View>
     );
