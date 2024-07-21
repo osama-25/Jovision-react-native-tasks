@@ -1,32 +1,45 @@
 import React, { useRef, useState } from "react"
-import { FlatList, Image, Pressable, Alert, View, StyleSheet, Button, TextInput } from "react-native"
+import { FlatList, Image, Pressable, Alert, View, StyleSheet, Button, TextInput, TouchableOpacity } from "react-native"
 import CustomAlert from "../Components/Alert-Input";
+import Icon from 'react-native-vector-icons/Ionicons';
 
-const jsonData = {
-    1: require('../Resources/0.jpeg'),
-    2: require('../Resources/1.jpeg'),
-    3: require('../Resources/2.jpeg'),
-    4: require('../Resources/3.jpeg'),
-    5: require('../Resources/4.jpg'),
-    6: require('../Resources/5.jpg'),
-    7: require('../Resources/6.jpg'),
-    8: require('../Resources/7.jpg'),
-    9: require('../Resources/8.jpg'),
-    10: require('../Resources/9.jpeg')
-};
-const imageData = Object.keys(jsonData).map(key => ({
-    id: key,
-    source: jsonData[key]
-}));
-const Item = ({ item, onPress }) => (
-    <Pressable onPress={onPress}>
-        <Image
-            style={styles.image}
-            source={item.source}
-        />
-    </Pressable>
-);
 const Task28 = () => {
+    const [jsonData, setjsonData] = useState([
+        { key: 1, src: require('../Resources/0.jpeg') },
+        { key: 2, src: require('../Resources/1.jpeg') },
+        { key: 3, src: require('../Resources/2.jpeg') },
+        { key: 4, src: require('../Resources/3.jpeg') },
+        { key: 5, src: require('../Resources/4.jpg') },
+        { key: 6, src: require('../Resources/5.jpg') },
+        { key: 7, src: require('../Resources/6.jpg') },
+        { key: 8, src: require('../Resources/7.jpg') },
+        { key: 9, src: require('../Resources/8.jpg') },
+        { key: 10, src: require('../Resources/9.jpeg') }
+    ]);
+    const removeItem = (index) => {
+        const updatedArray = jsonData.filter((item, i) => i !== index);
+        setjsonData(updatedArray);
+    };
+    const addItem = (index) => {
+        setjsonData([...jsonData, jsonData[index]]);
+    };
+    const imageData = jsonData.map((item) => ({
+        id: item.id,
+        source: item.src
+    }));
+    const Item = ({ item, onPress, removePress, dupPress }) => (
+        <Pressable onPress={onPress}>
+            <View style={styles.view}>
+                <Icon name="add-outline" size={40} color="red" onPress={dupPress} />
+                <Icon name="close-outline" size={40} color="red" onPress={removePress} />
+            </View>
+            <Image
+                style={styles.image}
+                source={item.source}
+            />
+        </Pressable>
+    );
+
     const flatListRef = useRef(null);
     const [isModalVisible, setModalVisible] = useState(false);
 
@@ -35,7 +48,7 @@ const Task28 = () => {
             'Image Selected',
             `You have selected image ${index + 1}`,
             [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
-            {cancelable: true}
+            { cancelable: true }
         )
     }
     const renderItem = ({ item, index }) => {
@@ -43,14 +56,17 @@ const Task28 = () => {
             <Item
                 item={item}
                 onPress={() => { ShowIndex(index) }}
+                removePress={() => { removeItem(index) }}
+                dupPress={() => { addItem(index)}}
             />
         );
     };
 
     const GoToMethod = (index) => {
-        if(flatListRef.current){
+        if (index < 0 || index > jsonData.length) return;
+        if (flatListRef.current) {
             index--;
-            flatListRef.current.scrollToIndex({index, viewPosition: 1,});
+            flatListRef.current.scrollToIndex({ index, viewPosition: 1, });
         }
     }
     return (
@@ -78,9 +94,17 @@ const styles = StyleSheet.create({
         backgroundColor: '#F5FCFF',
     },
     image: {
-        marginTop: 50,
-        height: 300,
+        marginTop: 15,
+        height: 250,
         width: 400,
+        zIndex: -1,
+    },
+    view: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        position: 'absolute',
+        top: 20,
+        width: '100%',
     },
 });
 export default Task28
